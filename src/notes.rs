@@ -1,4 +1,4 @@
-use iced::{Sandbox, Align, Column, Row, Text, TextInput, 
+use iced::{Sandbox, Column, Row, Text, TextInput, 
     text_input, Button, button};
 
 #[derive(Default)]
@@ -38,7 +38,6 @@ impl Sandbox for Notes {
     fn view(&mut self) -> iced::Element<'_, Self::Message> {
         
         let mut column = Column::new()
-        .align_items(Align::Center)
         .padding(20)
         .push(
             Row::new()
@@ -91,9 +90,11 @@ impl Sandbox for Notes {
                 self.state.text_value = text;
             },
             Message::NoteAdded => {
-                self.notes.push(self.state.text_value.clone());
-                self.state.remove_note_buttons_pressed.push(Default::default());
-                self.state.text_value = "".to_string();
+                if self.state.text_value != "" {
+                    self.notes.push(self.state.text_value.clone());
+                    self.state.remove_note_buttons_pressed.push(Default::default());
+                    self.state.text_value = "".to_string();
+                }
             },
             Message::NoteRemoved(index) => {
                 self.notes.remove(index);
