@@ -12,8 +12,10 @@ use iced::{Application, Settings};
 // use quiz::{Quiz, Question};
 // mod pages;
 // use pages::PagesApp;
-mod slider;
-use slider::SliderApp;
+// mod slider;
+// use slider::SliderApp;
+mod image;
+use image::ImageApp;
 
 fn main() -> iced::Result {
     // Hello::run(Settings::default())
@@ -40,7 +42,9 @@ fn main() -> iced::Result {
 
     // PagesApp::run(settings)
 
-    SliderApp::run(Settings::default())
+    // SliderApp::run(Settings::default())
+
+    ImageApp::run(Settings::default())
 
     // iced::Result::Ok(())
 }

@@ -7,5 +7,5 @@ resolver = "2"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-iced = { path = "/home/c0ldch0c0l8/Programming/iced-master" }
+iced = { git = "https://github.com/iced-rs/iced", rev = "3aae45c1913e6a6f60b009f19d00d10add7ad11e", features = ["image"] }
 fastrand = "1.5.0"
