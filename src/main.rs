@@ -16,8 +16,10 @@ use iced::{Application, Settings};
 // use slider::SliderApp;
 // mod image;
 // use image::ImageApp;
-mod radio;
-use radio::RadioApp;
+// mod radio;
+// use radio::RadioApp;
+mod quiz;
+use quiz::{QuizApp, Question};
 
 fn main() -> iced::Result {
     // Hello::run(Settings::default())
@@ -48,7 +50,15 @@ fn main() -> iced::Result {
 
     // ImageApp::run(Settings::default())
 
-    RadioApp::run(Settings::default())
+    // RadioApp::run(Settings::default())
+
+    let mut settings = Settings::default();
+    settings.flags = vec![
+        Question::new("What is your name?", vec!["Faith", "Coeur"]),
+        Question::new("What is your favorite letter?", vec!["A", "B", "C"])
+    ];
+
+    QuizApp::run(settings)
 
     // iced::Result::Ok(())
 }
