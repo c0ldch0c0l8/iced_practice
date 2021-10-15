@@ -20,8 +20,10 @@ use iced::{Application, Settings};
 // use radio::RadioApp;
 // mod quiz;
 // use quiz::{QuizApp, Question};
-mod space;
-use space::SpaceApp;
+// mod space;
+// use space::SpaceApp;
+mod toggle_checkbox;
+use toggle_checkbox::ToggleCheckApp;
 
 fn main() -> iced::Result {
     // Hello::run(Settings::default())
@@ -62,7 +64,10 @@ fn main() -> iced::Result {
 
     // QuizApp::run(settings)
 
-    SpaceApp::run(Settings::default())
+    // SpaceApp::run(Settings::default())
+
+    ToggleCheckApp::run(Settings::default())
+
 
     // iced::Result::Ok(())
 }
