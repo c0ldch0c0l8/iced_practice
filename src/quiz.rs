@@ -6,23 +6,31 @@ use iced::{Application, executor, Command, Text,
 #[derive(Clone)]
 pub struct Question {
     q: String,
-    a: Vec<String>
+    a: Vec<String>,
+    a_ind: usize,
+    a_act: Option<usize>
 }
 
 impl Question {
-    pub fn new(q: &str, a: Vec<&str>) -> Question {
+    pub fn new(q: &str, a: Vec<&str>, a_ind: usize, a_act: Option<usize>) -> Question {
         Question {
             q: q.to_string(),
-            a: a.iter().map(|answer| {answer.to_string()}).collect()
+            a: a.iter().map(|answer| {answer.to_string()}).collect(),
+            a_ind,
+            a_act
         }
     }
+}
+
+fn message(question: &Question, a: &String) {
+    
 }
 
 
 #[derive(Default)]
 pub struct QuizApp {
     quetions: Vec<Question>,
-    answers_active: Vec<String> 
+    answers_active: Vec<String>
 }
 
 impl Application for QuizApp {
@@ -35,7 +43,14 @@ impl Application for QuizApp {
             QuizApp {
                 quetions: flags.clone(),
                 answers_active: flags.iter().map(|q| {
-                    q.a[0].clone()
+                    match q.a_act {
+                        Some(a_ind) => {
+                            q.a[a_ind].clone()
+                        },
+                        None => {
+                            String::from("")
+                        }
+                    }
                 }).collect()
             },
             Command::none()
@@ -52,16 +67,16 @@ impl Application for QuizApp {
         for (question_index, question) in self.quetions.iter().enumerate() {
             let mut answer_row = Row::new();
             for a in &question.a {
-
-                // self.answers_active[question_index], should be val and others should be a
                 answer_row = answer_row
                 .push(
                     Radio::new(
-                        self.answers_active[question_index],
-                                 
+                        &self.answers_active[question_index],
+                        a,
+                        Some(a),
+                        message(question, )
                     )
-                )
-            } 
+                );
+            }
 
             column = column
             .push(

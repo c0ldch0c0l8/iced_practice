@@ -18,8 +18,10 @@ use iced::{Application, Settings};
 // use image::ImageApp;
 // mod radio;
 // use radio::RadioApp;
-mod quiz;
-use quiz::{QuizApp, Question};
+// mod quiz;
+// use quiz::{QuizApp, Question};
+mod space;
+use space::SpaceApp;
 
 fn main() -> iced::Result {
     // Hello::run(Settings::default())
@@ -52,13 +54,15 @@ fn main() -> iced::Result {
 
     // RadioApp::run(Settings::default())
 
-    let mut settings = Settings::default();
-    settings.flags = vec![
-        Question::new("What is your name?", vec!["Faith", "Coeur"]),
-        Question::new("What is your favorite letter?", vec!["A", "B", "C"])
-    ];
+    // let mut settings = Settings::default();
+    // settings.flags = vec![
+    //     Question::new("What is your name?", vec!["Faith", "Coeur"], 0, Some(1)),
+    //     Question::new("What is your favorite letter?", vec!["A", "B", "C"], 1, Some(0))
+    // ];
 
-    QuizApp::run(settings)
+    // QuizApp::run(settings)
+
+    SpaceApp::run(Settings::default())
 
     // iced::Result::Ok(())
 }
