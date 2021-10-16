@@ -22,8 +22,9 @@ use iced::{Application, Settings};
 // use quiz::{QuizApp, Question};
 // mod space;
 // use space::SpaceApp;
-mod toggle_checkbox;
-use toggle_checkbox::ToggleCheckApp;
+// mod toggle_checkbox;
+// use toggle_checkbox::ToggleCheckApp;
+
 
 fn main() -> iced::Result {
     // Hello::run(Settings::default())
@@ -66,8 +67,23 @@ fn main() -> iced::Result {
 
     // SpaceApp::run(Settings::default())
 
-    ToggleCheckApp::run(Settings::default())
+    // ToggleCheckApp::run(Settings::default())
+
+    // TODO: style, window settings, creating widgets, maybe radioagain? 
+
+    // let mut settings = Settings::default();
+    // settings.default_text_size = 50;
+    // settings.window.size = (400, 400);
+    // settings.window.resizable = false;
+    // settings.window.position = iced::window::Position::Centered;
+    // settings.window.decorations = false;
 
 
-    // iced::Result::Ok(())
+    // let icon = image::open("resources/images/iced.png").unwrap();
+    // settings.window.icon = iced::window::Icon::
+    // from_rgba(icon.to_rgba8().to_vec(), 68, 68).ok();
+    
+    // Hello::run(settings)
+    
+    iced::Result::Ok(())
 }
