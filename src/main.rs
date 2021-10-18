@@ -24,10 +24,8 @@ use iced::{Application, Settings};
 // use space::SpaceApp;
 // mod toggle_checkbox;
 // use toggle_checkbox::ToggleCheckApp;
-mod style;
-use style::StyleApp;
-
-
+// mod style;
+// use style::StyleApp;
 
 fn main() -> iced::Result {
     // Hello::run(Settings::default())
@@ -88,6 +86,7 @@ fn main() -> iced::Result {
     
     // Hello::run(settings)
 
-    StyleApp::run(Settings::default())
+    // StyleApp::run(Settings::default())
     
+    iced::Result::Ok(())
 }

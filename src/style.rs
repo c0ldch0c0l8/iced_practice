@@ -1,24 +1,10 @@
 use iced::{Column, Container, Radio, Sandbox, Text, container, radio};
 
-// #[derive(Default)]
-pub struct StyleApp<'a> {
+pub struct StyleApp {
     dark_mode: bool,
 
-    light_theme: Theme<'a>,
-    dark_theme: Theme<'a>,
-}
-
-impl<'a> StyleApp<'a> {
-    fn get_current_theme(&self) -> &Theme {
-        match self.dark_mode {
-            false => {
-                &self.light_theme
-            },
-            true => {
-                &self.dark_theme
-            }
-        }
-    }
+    light_theme: Theme,
+    dark_theme: Theme,
 }
 
 #[derive(Debug, Clone)]
@@ -27,7 +13,7 @@ pub enum DarkMode {
     On(bool)
 }
 
-impl Sandbox for StyleApp<'static> {
+impl Sandbox for StyleApp {
     type Message = DarkMode;
 
     fn new() -> Self {
@@ -44,14 +30,7 @@ impl Sandbox for StyleApp<'static> {
     }
 
     fn view(&mut self) -> iced::Element<'_, Self::Message> {
-        let current_theme = match self.dark_mode {
-            false => {
-                &self.light_theme
-            },
-            true => {
-                &self.dark_theme
-            }
-        };
+        let current_theme = Theme::new(self.dark_mode);
 
         let content = Column::new()
         .push(
@@ -66,7 +45,7 @@ impl Sandbox for StyleApp<'static> {
                 Some(false),
                 DarkMode::Off
             )
-            .style(current_theme.radio)
+            .style(current_theme.radio.clone())
         )
         .push(
             Radio::new(
@@ -105,49 +84,48 @@ impl Sandbox for StyleApp<'static> {
 
 use iced::{Background, Color};
 
-#[derive(Clone)]
-struct Theme<'a> {
-    dark_mode: &'a bool,
+struct Theme {
+    dark_mode: bool,
 
-    container: ContainerStyle<'a>,
+    container: ContainerStyle,
     text_color: Color,
-    radio: RadioStyle<'a>
+    radio: RadioStyle
 }
 
-impl<'a> Theme<'a> {
-    fn new(dark_mode: &'a bool) -> Theme<'a> {
-
-        // points to 
-        let mut theme = Theme {
+impl Theme {
+    fn new(dark_mode: bool) -> Theme {
+        Theme {
             dark_mode,
-            container: ContainerStyle::new(&dark_mode),
-            radio: RadioStyle::new(&dark_mode),
-            text_color: match dark_mode {true => {Color::WHITE}, false => {Color::BLACK}}
-        };
+            container: ContainerStyle::new(dark_mode),
+            text_color: if dark_mode { Color::WHITE } else { Color::BLACK },
+            radio: RadioStyle::new(dark_mode)
+        }
+    }
 
-        theme.container = ContainerStyle::new(&theme.dark_mode);
-        theme.radio = RadioStyle::new(&theme.dark_mode);
+    fn is_dark_mode(&self) -> bool {
+        self.dark_mode
+    }
 
-        theme
+    fn set_mode(&mut self, dark_mode: bool) {
+        *self = Theme::new(dark_mode);
     }
 }
 
-#[derive(Clone)]
-struct ContainerStyle<'a> {
-    dark_mode: &'a bool
+struct ContainerStyle {
+    dark_mode: bool
 }
 
-impl<'a> ContainerStyle<'a> {
-    fn new(dark_mode: &bool) -> ContainerStyle {
+impl ContainerStyle {
+    fn new(dark_mode: bool) -> ContainerStyle {
         ContainerStyle {
             dark_mode
         }
     }
 }
 
-impl<'a> container::StyleSheet for ContainerStyle<'a> {
+impl container::StyleSheet for ContainerStyle {
     fn style(&self) -> container::Style {
-        if *self.dark_mode {
+        if self.dark_mode {
             container::Style {
                 background: Some(Background::Color(Color::BLACK)),
                 text_color: Some(Color::WHITE),
@@ -169,21 +147,21 @@ impl<'a> container::StyleSheet for ContainerStyle<'a> {
 
 
 #[derive(Clone)]
-struct RadioStyle<'a> {
-    dark_mode: &'a bool
+struct RadioStyle {
+    dark_mode: bool
 }
 
-impl<'a> RadioStyle<'a> {
-    fn new(dark_mode: &bool) -> RadioStyle {
+impl RadioStyle {
+    fn new(dark_mode: bool) -> RadioStyle {
         RadioStyle {
             dark_mode
         }
     }
 }
 
-impl<'a> radio::StyleSheet for RadioStyle<'a> {
+impl radio::StyleSheet for RadioStyle {
     fn active(&self) -> radio::Style {
-        if *self.dark_mode {
+        if self.dark_mode {
             radio::Style {
                 background: Background::Color(Color::BLACK),
                 dot_color: Color::WHITE,
@@ -201,7 +179,7 @@ impl<'a> radio::StyleSheet for RadioStyle<'a> {
     }
 
     fn hovered(&self) -> radio::Style {
-        if *self.dark_mode {
+        if self.dark_mode {
             radio::Style {
                 background: Background::Color(Color::BLACK),
                 dot_color: Color::TRANSPARENT,
