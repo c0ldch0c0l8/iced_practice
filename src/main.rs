@@ -26,6 +26,8 @@ use iced::{Application, Settings};
 // use toggle_checkbox::ToggleCheckApp;
 // mod style;
 // use style::StyleApp;
+mod todo;
+use todo::TodoApp;
 
 fn main() -> iced::Result {
     // Hello::run(Settings::default())
@@ -88,5 +90,5 @@ fn main() -> iced::Result {
 
     // StyleApp::run(Settings::default())
     
-    iced::Result::Ok(())
+    TodoApp::run(Settings::default())
 }
