@@ -1,4 +1,4 @@
-use iced::{Sandbox, Column, Row, Text, TextInput, text_input, Button, button, };
+use iced::{Button, Checkbox, Column, Row, Sandbox, Text, TextInput, button, text_input};
 
 #[derive(Default)]
 pub struct TodoApp {
@@ -86,6 +86,35 @@ impl Sandbox for TodoApp {
             )
         );
 
+        // priority ordered (high to low)
+        let mut tasks_to_render = Vec::<Task>::new();
+        for task in &self.tasks {
+            if (self.show_todo && task.todo) || (!self.show_todo && !!task.todo) {
+                tasks_to_render.push(task.clone());
+            }
+        }
+
+        tasks_to_render.sort();
+
+        for task in &self.tasks {
+            if self.show_todo && task.todo {
+                content = content.push(
+                    Row::new()
+                    .push(
+                        Text::new(task.name)
+                    )
+                    .push(
+                        Text::new(&task.priority.to_string())
+                    )
+                    .push(
+                        Checkbox::new(
+                            
+                        )
+                    )
+                )
+            }
+        }
+
         content.into()
     }
 
@@ -122,9 +151,43 @@ impl Sandbox for TodoApp {
     }
 }
 
+#[derive(PartialEq)]
 struct Task {
     name: String,
     priority: usize,
-    date: bool, // get date var
+    date: usize, // get date var
     todo: bool // false == done
+}
+
+impl PartialOrd for Task {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        // if one is a task not done yet and the other is a done task => None
+        // todo tasks are ordered according to priority while
+        // done tasks are ordered accroding to date. this impl is limiting methinks
+        
+        use std::cmp::Ordering;
+
+        if self.todo != other.todo {
+            None
+        } else {
+            if self.todo {
+                if self.priority > other.priority {
+                    Some(Ordering::Greater)
+                } else if self.priority < other.priority {
+                    Some(Ordering::Less)
+                } else {
+                    Some(Ordering::Equal)
+                }
+            } else {
+                // make sure this works to have old appear last 
+                if self.date > other.date {
+                    Some(Ordering::Greater)
+                } else if self.date < other.date {
+                    Some(Ordering::Less)
+                } else {
+                    Some(Ordering::Equal)
+                }
+            }
+        }
+    }
 }
