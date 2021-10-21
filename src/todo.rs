@@ -1,4 +1,5 @@
-use iced::{Button, Checkbox, Column, Row, Sandbox, Text, TextInput, button, text_input};
+use iced::{Button, Column, Row, Sandbox, Text, TextInput, button, text_input};
+use chrono::{DateTime, Local};
 
 #[derive(Default)]
 pub struct TodoApp {
@@ -11,8 +12,10 @@ pub struct TodoApp {
     add_button_state: button::State,
 
     show_todo: bool,
-    todo_button_state: button::State,
-    done_button_state: button::State
+    show_todo_button_state: button::State,
+    show_done_button_state: button::State,
+
+    done_buttons: Vec<button::State>
 }
 
 #[derive(Debug, Clone)]
@@ -21,14 +24,18 @@ pub enum Message {
     PriorityChanged(String),
     AddTask,
     ShowTodoTasks,
-    ShowDoneTasks
+    ShowDoneTasks,
+    TaskDone(usize)
 }
 
 impl Sandbox for TodoApp {
     type Message = Message;
 
     fn new() -> Self {
-        Self::default()
+        Self {
+            show_todo: true,
+            ..Self::default()
+        }
     }
 
     fn title(&self) -> String {
@@ -72,47 +79,55 @@ impl Sandbox for TodoApp {
             Row::new()
             .push(
                 Button::new(
-                    &mut self.todo_button_state,
+                    &mut self.show_todo_button_state,
                     Text::new("Todo")
                 )
                 .on_press(Message::ShowTodoTasks)
             )
             .push(
                 Button::new(
-                    &mut self.done_button_state,
+                    &mut self.show_done_button_state,
                     Text::new("Done")
                 )
                 .on_press(Message::ShowDoneTasks)
             )
         );
 
-        // priority ordered (high to low)
-        let mut tasks_to_render = Vec::<Task>::new();
+        let mut tasks_to_render = Vec::<&Task>::new();
         for task in &self.tasks {
-            if (self.show_todo && task.todo) || (!self.show_todo && !!task.todo) {
-                tasks_to_render.push(task.clone());
+            if self.show_todo == task.todo {
+                tasks_to_render.push(task);
             }
         }
-
         tasks_to_render.sort();
 
-        for task in &self.tasks {
-            if self.show_todo && task.todo {
-                content = content.push(
-                    Row::new()
-                    .push(
-                        Text::new(task.name)
+        let mut done_buttons_mut_iter = self.done_buttons.iter_mut();
+
+        for task in tasks_to_render {
+
+            let mut task_row = Row::new()
+            .push(
+                Text::new(&task.name)
+            )
+            .push(
+                Text::new(&task.priority.to_string())
+            )
+            .push(
+                Text::new(task.date.format("%M:%S").to_string())
+            );
+
+            // make sure nth() is what i am aiming for and that this isnt buggy
+            if task.todo {
+                task_row = task_row.push(
+                    Button::new(
+                        done_buttons_mut_iter.nth(0).unwrap(),
+                        Text::new("done")
                     )
-                    .push(
-                        Text::new(&task.priority.to_string())
-                    )
-                    .push(
-                        Checkbox::new(
-                            
-                        )
-                    )
-                )
+                    .on_press(Message::TaskDone(task.index))
+                );       
             }
+
+            content = content.push(task_row);
         }
 
         content.into()
@@ -139,24 +154,52 @@ impl Sandbox for TodoApp {
                 }
             },
             Message::AddTask => {
+                if !self.input_value.is_empty() {
+                    self.tasks.push(Task::new(
+                        &self.input_value, 
+                        self.priority_value, 
+                        self.tasks.len()
+                    ));
 
+                    self.done_buttons.push(button::State::default());
+
+                    self.input_value = "".to_string();
+                    self.priority_value = 0;
+                }
             },
             Message::ShowTodoTasks => {
                 self.show_todo = true;
             },
             Message::ShowDoneTasks => {
                 self.show_todo = false;
+            },
+            Message::TaskDone(index) => {
+                self.tasks[index].todo = false;
             }
         }   
     }
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Eq, Ord)]
 struct Task {
     name: String,
     priority: usize,
-    date: usize, // get date var
-    todo: bool // false == done
+    date: DateTime<Local>, 
+    todo: bool, 
+
+    index: usize // in vec
+}
+
+impl Task {
+    fn new(name: &str, priority: usize, index: usize) -> Task {
+        Task {
+            name: name.to_string(),
+            priority,
+            date: Local::now(),
+            todo: true,
+            index
+        }
+    }
 }
 
 impl PartialOrd for Task {
@@ -171,19 +214,21 @@ impl PartialOrd for Task {
             None
         } else {
             if self.todo {
+                // ordered in descending priority
+
                 if self.priority > other.priority {
-                    Some(Ordering::Greater)
-                } else if self.priority < other.priority {
                     Some(Ordering::Less)
+                } else if self.priority < other.priority {
+                    Some(Ordering::Greater)
                 } else {
                     Some(Ordering::Equal)
                 }
             } else {
                 // make sure this works to have old appear last 
                 if self.date > other.date {
-                    Some(Ordering::Greater)
-                } else if self.date < other.date {
                     Some(Ordering::Less)
+                } else if self.date < other.date {
+                    Some(Ordering::Greater)
                 } else {
                     Some(Ordering::Equal)
                 }
