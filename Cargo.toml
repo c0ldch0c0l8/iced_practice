@@ -7,7 +7,8 @@ resolver = "2"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-iced = { git = "https://github.com/iced-rs/iced", rev = "3aae45c1913e6a6f60b009f19d00d10add7ad11e", features = ["image"] }
+iced = { git = "https://github.com/iced-rs/iced", rev = "3aae45c1913e6a6f60b009f19d00d10add7ad11e", features = ["image", "svg"] }
 fastrand = "1.5.0"
 # image = "0.23.14" ; added with Icon experimentation but forgot to add to commit
 chrono = "0.4"
+lazy_static = "1.4.0"

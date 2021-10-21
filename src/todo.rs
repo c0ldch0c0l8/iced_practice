@@ -1,4 +1,4 @@
-use iced::{Button, Column, Row, Sandbox, Text, TextInput, button, text_input};
+use iced::{Container, Button, Column, Row, Sandbox, Text, TextInput, button, text_input, Svg};
 use chrono::{DateTime, Local};
 
 #[derive(Default)]
@@ -48,7 +48,7 @@ impl Sandbox for TodoApp {
             priority_display_value = "".to_string();
         }
 
-        let mut content = Column::new()
+        let mut column = Column::new()
         .push(
             Row::new()
             .push(
@@ -66,13 +66,16 @@ impl Sandbox for TodoApp {
                     &priority_display_value,
                     Message::PriorityChanged
                 )
+                .style(style::PriorityInputStyle)
             )
             .push(
                 Button::new(
                     &mut self.add_button_state,
-                    Text::new("Add task")
+                    // Text::new("Add task")
+                    Svg::from_path("/home/c0ldch0c0l8/Programming/iced_practice/resources/material icons/add_task_white.svg")
                 )
                 .on_press(Message::AddTask)
+                .style(style::AddTaskStyle)
             )
         )
         .push(
@@ -127,10 +130,13 @@ impl Sandbox for TodoApp {
                 );       
             }
 
-            content = content.push(task_row);
+            column = column.push(task_row);
         }
 
-        content.into()
+        let container = Container::new(column)
+        .style(style::ContainerStyle);
+
+        container.into()
     }
 
     fn update(&mut self, message: Self::Message) {
@@ -215,7 +221,6 @@ impl PartialOrd for Task {
         } else {
             if self.todo {
                 // ordered in descending priority
-
                 if self.priority > other.priority {
                     Some(Ordering::Less)
                 } else if self.priority < other.priority {
@@ -233,6 +238,87 @@ impl PartialOrd for Task {
                     Some(Ordering::Equal)
                 }
             }
+        }
+    }
+}
+
+
+mod style {
+    use iced::{Background, Color, Length::{self, Units}, Space, button, container, text_input};
+
+    lazy_static::lazy_static! {
+        static ref DARK_BG_COLOR: Color = Color::new(18.0/255.0, 18.0/255.0, 18.0/255.0, 1.0);
+
+        static ref HIGH_EMPHASIS_TEXT_COLOR: Color = Color::new(1.0, 1.0, 1.0, 0.87); 
+        static ref MEDIUM_EMPHASIS_TEXT_COLOR: Color = Color::new(1.0, 1.0, 1.0, 0.6);
+        static ref DISABLED_TEXT_COLOR: Color = Color::new(1.0, 1.0, 1.0, 0.38); 
+
+        static ref TEXT_SELECTION_COLOR: Color = Color::new(52.0/255.0, 152.0/255.0, 219.0/255.0, 1.0);
+    }
+
+
+    pub struct ContainerStyle;
+
+    impl container::StyleSheet for ContainerStyle {
+        fn style(&self) -> container::Style {
+            container::Style {
+                background: Some(Background::Color(*DARK_BG_COLOR)),
+                text_color: Some(Color::WHITE),
+                border_color: Color::WHITE,
+                border_radius: 0.0,
+                border_width: 0.0
+            }
+        }
+    }
+
+    pub struct PriorityInputStyle;
+
+    impl text_input::StyleSheet for PriorityInputStyle {
+        fn active(&self) -> text_input::Style {
+            text_input::Style {
+                background: Background::Color(*DARK_BG_COLOR),
+                border_color: Color::WHITE,
+                border_radius: 0.0,
+                border_width: 0.0
+            }
+        }
+
+        fn focused(&self) -> text_input::Style {
+            text_input::Style {
+                background: Background::Color(*DARK_BG_COLOR),
+                border_color: Color::WHITE,
+                border_radius: 0.0,
+                border_width: 0.0
+            }
+        }
+
+        fn value_color(&self) -> Color {
+            *HIGH_EMPHASIS_TEXT_COLOR
+        }
+
+        fn placeholder_color(&self) -> Color {
+            *MEDIUM_EMPHASIS_TEXT_COLOR
+        }
+
+        fn selection_color(&self) -> Color {
+            *TEXT_SELECTION_COLOR
+        }
+    }
+
+    pub struct AddTaskStyle;
+
+    impl button::StyleSheet for AddTaskStyle {
+        fn active(&self) -> button::Style {
+            button::Style {
+                background: Some(Background::Color(*DARK_BG_COLOR)),
+                border_color: Color::WHITE,
+                border_radius: 0.0,
+                border_width: 0.0,
+                text_color: *HIGH_EMPHASIS_TEXT_COLOR,
+                ..Default::default()
+            }
+
+            // other methods available
         }
     }
 }
