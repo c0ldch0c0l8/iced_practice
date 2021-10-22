@@ -89,6 +89,8 @@ fn main() -> iced::Result {
     // Hello::run(settings)
 
     // StyleApp::run(Settings::default())
-    
-    TodoApp::run(Settings::default())
+    let mut settings = Settings::default();
+    settings.window.min_size = Some((400, 300));
+
+    TodoApp::run(settings)
 }

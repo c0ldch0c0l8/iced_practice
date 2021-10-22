@@ -1,4 +1,4 @@
-use iced::{Container, Button, Column, Row, Sandbox, Text, TextInput, button, text_input, Svg};
+use iced::{Button, Column, Container, Length, Row, Sandbox, Space, Svg, Text, TextInput, alignment::Horizontal, button, text_input};
 use chrono::{DateTime, Local};
 
 #[derive(Default)]
@@ -48,9 +48,11 @@ impl Sandbox for TodoApp {
             priority_display_value = "".to_string();
         }
 
-        let mut column = Column::new()
+        let mut content = Column::new()
+        .spacing(8)
         .push(
             Row::new()
+            .padding([0, 40])
             .push(
                 TextInput::new(
                     &mut self.input_state,
@@ -58,6 +60,8 @@ impl Sandbox for TodoApp {
                     &self.input_value,
                     Message::InputChanged
                 )
+                .padding([0, 8])
+                .style(style::TextInputStyle)
             )
             .push(
                 TextInput::new(
@@ -66,13 +70,12 @@ impl Sandbox for TodoApp {
                     &priority_display_value,
                     Message::PriorityChanged
                 )
-                .style(style::PriorityInputStyle)
+                .style(style::TextInputStyle)
             )
             .push(
                 Button::new(
                     &mut self.add_button_state,
-                    // Text::new("Add task")
-                    Svg::from_path("/home/c0ldch0c0l8/Programming/iced_practice/resources/material icons/add_task_white.svg")
+                    Svg::from_path("resources/material icons/add_task_white.svg")
                 )
                 .on_press(Message::AddTask)
                 .style(style::AddTaskStyle)
@@ -81,18 +84,26 @@ impl Sandbox for TodoApp {
         .push(
             Row::new()
             .push(
+                Space::with_width(Length::Fill)
+            )
+            .push(
                 Button::new(
                     &mut self.show_todo_button_state,
-                    Text::new("Todo")
+                    Text::new("Todo").size(40)
                 )
                 .on_press(Message::ShowTodoTasks)
+                .style(style::ShowButtonStyle)
             )
             .push(
                 Button::new(
                     &mut self.show_done_button_state,
-                    Text::new("Done")
+                    Text::new("Done").size(40)
                 )
                 .on_press(Message::ShowDoneTasks)
+                .style(style::ShowButtonStyle)
+            )
+            .push(
+                Space::with_width(Length::Fill)
             )
         );
 
@@ -130,13 +141,14 @@ impl Sandbox for TodoApp {
                 );       
             }
 
-            column = column.push(task_row);
+            content = content.push(task_row);
         }
 
-        let container = Container::new(column)
-        .style(style::ContainerStyle);
-
-        container.into()
+        Container::new(content)
+        .width(Length::Fill)
+        .height(Length::Fill)
+        .style(style::ContainerStyle)
+        .into()
     }
 
     fn update(&mut self, message: Self::Message) {
@@ -271,9 +283,9 @@ mod style {
         }
     }
 
-    pub struct PriorityInputStyle;
+    pub struct TextInputStyle;
 
-    impl text_input::StyleSheet for PriorityInputStyle {
+    impl text_input::StyleSheet for TextInputStyle {
         fn active(&self) -> text_input::Style {
             text_input::Style {
                 background: Background::Color(*DARK_BG_COLOR),
@@ -310,15 +322,37 @@ mod style {
     impl button::StyleSheet for AddTaskStyle {
         fn active(&self) -> button::Style {
             button::Style {
-                background: Some(Background::Color(*DARK_BG_COLOR)),
-                border_color: Color::WHITE,
-                border_radius: 0.0,
+                background: None, 
+                border_radius: 0.0, 
                 border_width: 0.0,
+                border_color: Color::WHITE,
                 text_color: *HIGH_EMPHASIS_TEXT_COLOR,
                 ..Default::default()
             }
 
             // other methods available
+        }
+    }
+
+    pub struct ShowButtonStyle;
+
+    impl button::StyleSheet for ShowButtonStyle {
+        fn active(&self) -> button::Style {
+            button::Style {
+                background: None, 
+                border_radius: 0.0, 
+                border_width: 0.0,
+                border_color: Color::WHITE,
+                text_color: *MEDIUM_EMPHASIS_TEXT_COLOR,
+                ..Default::default()
+            }
+        }
+
+        fn pressed(&self) -> button::Style {
+            button::Style {
+                text_color: *HIGH_EMPHASIS_TEXT_COLOR,
+                ..self.active()
+            }
         }
     }
 }
