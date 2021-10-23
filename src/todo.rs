@@ -43,69 +43,72 @@ impl Sandbox for TodoApp {
     }
 
     fn view(&mut self) -> iced::Element<'_, Self::Message> {
+
+        // keep priority grey if == 0
         let mut priority_display_value = self.priority_value.to_string();
         if self.priority_value == 0 {
             priority_display_value = "".to_string();
         }
+
+        let task_text_input = TextInput::new(
+            &mut self.input_state,
+            "Enter a task..",
+            &self.input_value,
+            Message::InputChanged
+        )
+        .on_submit(Message::AddTask)
+        .padding([0, 8])
+        .style(style::TextInput);
+
+        let priority_text_input = TextInput::new(
+            &mut self.priority_state,
+            "0",
+            &priority_display_value,
+            Message::PriorityChanged
+        )
+        .on_submit(Message::AddTask)
+        .style(style::TextInput);
+
+        let add_task_button = Button::new(
+            &mut self.add_button_state,
+            Svg::from_path("resources/material icons/add_task_white.svg")
+        )
+        .on_press(Message::AddTask)
+        .style(style::AddTask);
 
         let mut content = Column::new()
         .spacing(8)
         .push(
             Row::new()
             .padding([0, 40])
-            .push(
-                TextInput::new(
-                    &mut self.input_state,
-                    "Enter task",
-                    &self.input_value,
-                    Message::InputChanged
-                )
-                .padding([0, 8])
-                .style(style::TextInputStyle)
-            )
-            .push(
-                TextInput::new(
-                    &mut self.priority_state,
-                    "0",
-                    &priority_display_value,
-                    Message::PriorityChanged
-                )
-                .style(style::TextInputStyle)
-            )
-            .push(
-                Button::new(
-                    &mut self.add_button_state,
-                    Svg::from_path("resources/material icons/add_task_white.svg")
-                )
-                .on_press(Message::AddTask)
-                .style(style::AddTaskStyle)
-            )
+            .push(task_text_input)
+            .push(priority_text_input)
+            .push(add_task_button)
+        );
+
+        let show_todo_tasks_button = Button::new(
+            &mut self.show_todo_button_state,
+            Text::new("Todo").size(40).font(*style::ROBOTO_MONO_BOLD)
         )
+        .on_press(Message::ShowTodoTasks)
+        .style(style::ShowButton);
+
+        let show_done_tasks_button = Button::new(
+            &mut self.show_done_button_state,
+            Text::new("Done").size(40).font(*style::ROBOTO_MONO_BOLD)
+        )
+        .on_press(Message::ShowDoneTasks)
+        .style(style::ShowButton);
+
+        content = content
         .push(
             Row::new()
-            .push(
-                Space::with_width(Length::Fill)
-            )
-            .push(
-                Button::new(
-                    &mut self.show_todo_button_state,
-                    Text::new("Todo").size(40)
-                )
-                .on_press(Message::ShowTodoTasks)
-                .style(style::ShowButtonStyle)
-            )
-            .push(
-                Button::new(
-                    &mut self.show_done_button_state,
-                    Text::new("Done").size(40)
-                )
-                .on_press(Message::ShowDoneTasks)
-                .style(style::ShowButtonStyle)
-            )
-            .push(
-                Space::with_width(Length::Fill)
-            )
+            .push(Space::with_width(Length::Fill))
+            .push(show_todo_tasks_button)
+            .push(show_done_tasks_button)
+            .push(Space::with_width(Length::Fill))
         );
+
 
         let mut tasks_to_render = Vec::<&Task>::new();
         for task in &self.tasks {
@@ -117,18 +120,19 @@ impl Sandbox for TodoApp {
 
         let mut done_buttons_mut_iter = self.done_buttons.iter_mut();
 
+
         for task in tasks_to_render {
+            let task_name = Text::new(&task.name).size(20);
+            let task_priority = Text::new(&task.priority.to_string()).size(20);
+            let task_date_created = Text::new(task.date.format("%M:%S").to_string()).size(20).font(*style::ROBOTO_MONO_THIN);
 
             let mut task_row = Row::new()
-            .push(
-                Text::new(&task.name)
-            )
-            .push(
-                Text::new(&task.priority.to_string())
-            )
-            .push(
-                Text::new(task.date.format("%M:%S").to_string())
-            );
+            .padding([0, 40])
+            .push(task_name)
+            .push(Space::with_width(Length::Units(16)))
+            .push(task_priority)
+            .push(Space::with_width(Length::Fill))
+            .push(task_date_created);
 
             // make sure nth() is what i am aiming for and that this isnt buggy
             if task.todo {
@@ -147,7 +151,7 @@ impl Sandbox for TodoApp {
         Container::new(content)
         .width(Length::Fill)
         .height(Length::Fill)
-        .style(style::ContainerStyle)
+        .style(style::Container)
         .into()
     }
 
@@ -256,9 +260,19 @@ impl PartialOrd for Task {
 
 
 mod style {
-    use iced::{Background, Color, Length::{self, Units}, Space, button, container, text_input};
+    use iced::{Background, Color, Font, Length::{self, Units}, Space, button, container, text_input};
 
     lazy_static::lazy_static! {
+        pub static ref ROBOTO_MONO_BOLD: Font = Font::External { 
+            name: "", 
+            bytes: include_bytes!("../resources/Roboto_Mono/static/RobotoMono-Bold.ttf")
+        };
+        pub static ref ROBOTO_MONO_THIN: Font = Font::External { 
+            name: "", 
+            bytes: include_bytes!("../resources/Roboto_Mono/static/RobotoMono-Thin.ttf")
+        };
+
+        static ref RED: Color = Color::new(1.0, 0.0, 0.0, 1.0);
         static ref DARK_BG_COLOR: Color = Color::new(18.0/255.0, 18.0/255.0, 18.0/255.0, 1.0);
 
         static ref HIGH_EMPHASIS_TEXT_COLOR: Color = Color::new(1.0, 1.0, 1.0, 0.87); 
@@ -269,9 +283,9 @@ mod style {
     }
 
 
-    pub struct ContainerStyle;
+    pub struct Container;
 
-    impl container::StyleSheet for ContainerStyle {
+    impl container::StyleSheet for Container {
         fn style(&self) -> container::Style {
             container::Style {
                 background: Some(Background::Color(*DARK_BG_COLOR)),
@@ -283,9 +297,9 @@ mod style {
         }
     }
 
-    pub struct TextInputStyle;
+    pub struct TextInput;
 
-    impl text_input::StyleSheet for TextInputStyle {
+    impl text_input::StyleSheet for TextInput {
         fn active(&self) -> text_input::Style {
             text_input::Style {
                 background: Background::Color(*DARK_BG_COLOR),
@@ -317,9 +331,9 @@ mod style {
         }
     }
 
-    pub struct AddTaskStyle;
+    pub struct AddTask;
 
-    impl button::StyleSheet for AddTaskStyle {
+    impl button::StyleSheet for AddTask {
         fn active(&self) -> button::Style {
             button::Style {
                 background: None, 
@@ -334,9 +348,9 @@ mod style {
         }
     }
 
-    pub struct ShowButtonStyle;
+    pub struct ShowButton;
 
-    impl button::StyleSheet for ShowButtonStyle {
+    impl button::StyleSheet for ShowButton {
         fn active(&self) -> button::Style {
             button::Style {
                 background: None, 
@@ -355,4 +369,7 @@ mod style {
             }
         }
     }
+
+
+    // pub struct TaskRow
 }
