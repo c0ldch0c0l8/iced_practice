@@ -122,8 +122,8 @@ impl Sandbox for TodoApp {
 
 
         for task in tasks_to_render {
-            let task_name = Text::new(&task.name).size(20);
-            let task_priority = Text::new(&task.priority.to_string()).size(20);
+            let task_name = Text::new(&task.name).size(20).width(Length::Units(400));
+            let task_priority = Text::new(&task.priority.to_string()).size(20).width(Length::Units(40));
             let task_date_created = Text::new(task.date.format("%M:%S").to_string()).size(20).font(*style::ROBOTO_MONO_THIN);
 
             let mut task_row = Row::new()

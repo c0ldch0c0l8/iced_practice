@@ -90,7 +90,7 @@ fn main() -> iced::Result {
 
     // StyleApp::run(Settings::default())
     let mut settings = Settings::default();
-    settings.window.min_size = Some((400, 300));
+    settings.window.min_size = Some((600, 400));
     settings.default_font = Some(include_bytes!("../resources/Roboto_Mono/static/RobotoMono-Regular.ttf"));
 
     TodoApp::run(settings)
