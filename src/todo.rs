@@ -1,4 +1,4 @@
-use iced::{Button, Column, Container, Length, Row, Sandbox, Space, Svg, Text, TextInput, alignment::Horizontal, button, text_input};
+use iced::{Button, Column, Container, Length, Row, Sandbox, Space, Svg, Text, TextInput, button, text_input};
 use chrono::{DateTime, Local};
 
 #[derive(Default)]
@@ -57,7 +57,8 @@ impl Sandbox for TodoApp {
             Message::InputChanged
         )
         .on_submit(Message::AddTask)
-        .padding([0, 8])
+        .width(Length::Units(492))
+        .padding([0, 0, 0, 8])
         .style(style::TextInput);
 
         let priority_text_input = TextInput::new(
@@ -91,14 +92,14 @@ impl Sandbox for TodoApp {
             Text::new("Todo").size(40).font(*style::ROBOTO_MONO_BOLD)
         )
         .on_press(Message::ShowTodoTasks)
-        .style(style::ShowButton);
+        .style(style::ShowButton { on: self.show_todo });
 
         let show_done_tasks_button = Button::new(
             &mut self.show_done_button_state,
             Text::new("Done").size(40).font(*style::ROBOTO_MONO_BOLD)
         )
         .on_press(Message::ShowDoneTasks)
-        .style(style::ShowButton);
+        .style(style::ShowButton { on: !self.show_todo });
 
         content = content
         .push(
@@ -122,17 +123,19 @@ impl Sandbox for TodoApp {
 
 
         for task in tasks_to_render {
-            let task_name = Text::new(&task.name).size(20).width(Length::Units(400));
+            let task_name = Text::new(&task.name).size(20).width(Length::Units(500));
             let task_priority = Text::new(&task.priority.to_string()).size(20).width(Length::Units(40));
-            let task_date_created = Text::new(task.date.format("%M:%S").to_string()).size(20).font(*style::ROBOTO_MONO_THIN);
+            let task_date_created = Text::new(task.date.format("%M:%S").to_string()).size(20).font(*style::ROBOTO_MONO_THIN).color(*style::DISABLED_TEXT_COLOR);
 
             let mut task_row = Row::new()
             .padding([0, 40])
             .push(task_name)
-            .push(Space::with_width(Length::Units(16)))
             .push(task_priority)
             .push(Space::with_width(Length::Fill))
-            .push(task_date_created);
+            .push(task_date_created)
+            .push(Space::with_width(Length::Units(16)))
+            .height(Length::Units(32));
+            
 
             // make sure nth() is what i am aiming for and that this isnt buggy
             if task.todo {
@@ -143,6 +146,14 @@ impl Sandbox for TodoApp {
                     )
                     .on_press(Message::TaskDone(task.index))
                 );       
+            } else {
+                task_row = task_row
+                .push(
+                    Text::new(task.date_done.format("%M:%S").to_string())
+                    .size(20)
+                    .font(*style::ROBOTO_MONO_THIN)
+                    .color(*style::DISABLED_TEXT_COLOR)
+                );
             }
 
             content = content.push(task_row);
@@ -187,6 +198,8 @@ impl Sandbox for TodoApp {
 
                     self.input_value = "".to_string();
                     self.priority_value = 0;
+
+                    self.show_todo = true;
                 }
             },
             Message::ShowTodoTasks => {
@@ -197,6 +210,7 @@ impl Sandbox for TodoApp {
             },
             Message::TaskDone(index) => {
                 self.tasks[index].todo = false;
+                self.tasks[index].date_done = Local::now();
             }
         }   
     }
@@ -206,7 +220,8 @@ impl Sandbox for TodoApp {
 struct Task {
     name: String,
     priority: usize,
-    date: DateTime<Local>, 
+    date: DateTime<Local>,
+    date_done: DateTime<Local>,
     todo: bool, 
 
     index: usize // in vec
@@ -218,6 +233,7 @@ impl Task {
             name: name.to_string(),
             priority,
             date: Local::now(),
+            date_done: Local::now(),
             todo: true,
             index
         }
@@ -277,7 +293,7 @@ mod style {
 
         static ref HIGH_EMPHASIS_TEXT_COLOR: Color = Color::new(1.0, 1.0, 1.0, 0.87); 
         static ref MEDIUM_EMPHASIS_TEXT_COLOR: Color = Color::new(1.0, 1.0, 1.0, 0.6);
-        static ref DISABLED_TEXT_COLOR: Color = Color::new(1.0, 1.0, 1.0, 0.38); 
+        pub static ref DISABLED_TEXT_COLOR: Color = Color::new(1.0, 1.0, 1.0, 0.38); 
 
         static ref TEXT_SELECTION_COLOR: Color = Color::new(52.0/255.0, 152.0/255.0, 219.0/255.0, 1.0);
     }
@@ -348,7 +364,7 @@ mod style {
         }
     }
 
-    pub struct ShowButton;
+    pub struct ShowButton { pub on: bool }
 
     impl button::StyleSheet for ShowButton {
         fn active(&self) -> button::Style {
@@ -357,15 +373,8 @@ mod style {
                 border_radius: 0.0, 
                 border_width: 0.0,
                 border_color: Color::WHITE,
-                text_color: *MEDIUM_EMPHASIS_TEXT_COLOR,
+                text_color: if self.on { *HIGH_EMPHASIS_TEXT_COLOR } else { *MEDIUM_EMPHASIS_TEXT_COLOR },
                 ..Default::default()
-            }
-        }
-
-        fn pressed(&self) -> button::Style {
-            button::Style {
-                text_color: *HIGH_EMPHASIS_TEXT_COLOR,
-                ..self.active()
             }
         }
     }
