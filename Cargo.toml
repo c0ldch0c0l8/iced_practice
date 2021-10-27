@@ -12,3 +12,5 @@ fastrand = "1.5.0"
 # image = "0.23.14" ; added with Icon experimentation but forgot to add to commit
 chrono = "0.4"
 lazy_static = "1.4.0"
+iced_native = { git = "https://github.com/iced-rs/iced", rev = "3aae45c1913e6a6f60b009f19d00d10add7ad11e"}
+iced_graphics = { git = "https://github.com/iced-rs/iced", rev = "3aae45c1913e6a6f60b009f19d00d10add7ad11e"}

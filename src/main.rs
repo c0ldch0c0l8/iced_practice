@@ -26,8 +26,10 @@ use iced::{Application, Settings};
 // use toggle_checkbox::ToggleCheckApp;
 // mod style;
 // use style::StyleApp;
-mod todo;
-use todo::TodoApp;
+// mod todo;
+// use todo::TodoApp;
+mod widget;
+use widget::WidgetApp;
 
 fn main() -> iced::Result {
     // Hello::run(Settings::default())
@@ -89,9 +91,11 @@ fn main() -> iced::Result {
     // Hello::run(settings)
 
     // StyleApp::run(Settings::default())
-    let mut settings = Settings::default();
-    settings.window.min_size = Some((750, 400));
-    settings.default_font = Some(include_bytes!("../resources/Roboto_Mono/static/RobotoMono-Regular.ttf"));
+    // let mut settings = Settings::default();
+    // settings.window.min_size = Some((750, 400));
+    // settings.default_font = Some(include_bytes!("../resources/Roboto_Mono/static/RobotoMono-Regular.ttf"));
 
-    TodoApp::run(settings)
+    // TodoApp::run(settings)
+
+    WidgetApp::run(Settings::default())
 }
