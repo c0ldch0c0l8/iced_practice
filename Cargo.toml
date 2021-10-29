@@ -7,10 +7,19 @@ resolver = "2"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-iced = { git = "https://github.com/iced-rs/iced", rev = "3aae45c1913e6a6f60b009f19d00d10add7ad11e", features = ["image", "svg"] }
 fastrand = "1.5.0"
-# image = "0.23.14" ; added with Icon experimentation but forgot to add to commit
+image = "0.23.14"
 chrono = "0.4"
 lazy_static = "1.4.0"
-iced_native = { git = "https://github.com/iced-rs/iced", rev = "3aae45c1913e6a6f60b009f19d00d10add7ad11e"}
-iced_graphics = { git = "https://github.com/iced-rs/iced", rev = "3aae45c1913e6a6f60b009f19d00d10add7ad11e"}
+
+# iced = { git = "https://github.com/iced-rs/iced", features = ["image", "svg"] }
+# iced_native = { git = "https://github.com/iced-rs/iced"}
+# iced_graphics = { git = "https://github.com/iced-rs/iced"}
+
+
+#[patch.crates-io]
+iced = { path = "../iced" }
+
+# those dont work this way :(
+# iced_native = { path = "../iced" }
+# iced_graphics = { path = "../iced" }
