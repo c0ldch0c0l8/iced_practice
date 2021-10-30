@@ -1031,6 +1031,8 @@ dependencies = [
  "chrono",
  "fastrand",
  "iced",
+ "iced_graphics",
+ "iced_native",
  "image",
  "lazy_static",
 ]

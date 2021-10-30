@@ -30,8 +30,10 @@ use iced::{Application, Settings};
 // use todo::TodoApp;
 // mod widget;
 // use widget::WidgetApp;
-mod widget_text_color;
-use widget_text_color::WidgetTextColor;
+// mod widget_text_color;
+// use widget_text_color::WidgetTextColor;
+mod custom_text;
+use custom_text::CustomTextApp;
 
 fn main() -> iced::Result {
     // Hello::run(Settings::default())
@@ -101,5 +103,7 @@ fn main() -> iced::Result {
 
     // WidgetApp::run(Settings::default())
     
-    WidgetTextColor::run(Settings::default())
+    // WidgetTextColor::run(Settings::default())
+
+    CustomTextApp::run(Settings::default())
 }
